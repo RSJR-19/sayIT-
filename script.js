@@ -9,6 +9,22 @@ const bouncingWordArr = [];
 const wordTrack = {};
 const repeatingWords = {};
 
+function saveWords(){
+    localStorage.setItem("bouncingWords",JSON.stringify(repeatingWords));
+}
+
+function loadWords(){
+    const savedWords = JSON.parse(localStorage.getItem("bouncingWords") || "{}");
+
+    for (const text in savedWords) {
+        const newBouncingWord = new BouncingWord(text);
+
+        repeatingWords[text] = savedWords[text];
+        wordTrack[text] = newBouncingWord;
+        bouncingWordArr.push(newBouncingWord);
+    }
+}
+
 class BouncingWord{
     constructor(text){
         this.text = text;
@@ -67,13 +83,12 @@ function animate(){
     });
 }
 
+loadWords();
 animate();
 
 wordInput.addEventListener('keydown', (e)=>{
     if(e.key === "Enter"){
         if (wordInput.value.trim()){
-
-
             if (wordInput.value.trim() in repeatingWords){
                 repeatingWords[wordInput.value.trim()]++;
                 wordTrack[wordInput.value.trim()].color = `hsl(${Math.random() * 360}, 100%, 50%)`;
@@ -87,6 +102,7 @@ wordInput.addEventListener('keydown', (e)=>{
                 bouncingWordArr.push(newBouncingWord);
                 console.log(wordInput.value.trim())
             }
+            saveWords();
             console.log(repeatingWords);
             console.log(wordTrack);
         }
